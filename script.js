@@ -342,9 +342,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (data.videos && data.videos.length > 0) {
-                currentVideos = data.videos;
+                currentVideos = data.videos.map(toEmbedUrl).filter(Boolean);
                 currentVideoIndex = 0;
-                embedVideo(currentVideos[0]);
+                if (currentVideos.length > 0) {
+                    embedVideo(currentVideos[0]);
+                } else {
+                    embedVideo('https://www.youtube.com/embed/jfKfPfyJRdk');
+                }
             } else {
                 // Fallback safe URL if data is somehow missing from webhook
                 embedVideo('https://www.youtube.com/embed/jfKfPfyJRdk');
@@ -357,6 +361,17 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(error.message);
             document.getElementById('loading-view').classList.add('hidden');
             document.getElementById('timer-view').classList.remove('hidden'); // Return to timer
+        }
+    }
+
+    function toEmbedUrl(url) {
+        try {
+            if (url.includes('/embed/')) return url;
+            const videoId = url.split('v=')[1]?.split('&')[0];
+            if (!videoId) return null;
+            return 'https://www.youtube.com/embed/' + videoId;
+        } catch (e) {
+            return null;
         }
     }
 
