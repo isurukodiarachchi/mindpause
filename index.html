@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindPause — Your Personal Recovery Companion</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- 1. HOME SCREEN -->
+    <section id="home-screen" class="screen active">
+        <div class="home-content">
+            <div class="brand-mark"></div>
+            <h1 class="gradient-text">MindPause</h1>
+            <p class="subtitle">Your personal recovery companion</p>
+            <div class="home-actions">
+                <button class="btn btn-primary" id="btn-go-start">
+                    Let's Start
+                    <span class="btn-hint">New here? Set up your profile</span>
+                </button>
+                <button class="btn btn-surface" id="btn-go-login">
+                    Login
+                    <span class="btn-hint">Welcome back</span>
+                </button>
+                <button class="btn btn-ghost" id="btn-go-settings-home">
+                    Settings
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. LET'S START SCREEN -->
+    <section id="start-screen" class="screen hidden">
+        <header class="screen-header">
+            <button class="btn-back" id="btn-back-start">← Back</button>
+        </header>
+        <div class="form-container">
+            <h2>Let's get to know you</h2>
+            
+            <div class="input-group">
+                <label for="user-name">What should we call you?</label>
+                <input type="text" id="user-name" placeholder="Your name">
+            </div>
+
+            <div class="mcq-group" id="q1-group">
+                <label>What kind of break do you want right now?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="q1" data-val="Calm and relaxing">Calm and relaxing</button>
+                    <button class="pill" data-q="q1" data-val="Inspiring motivational">Inspiring motivational</button>
+                    <button class="pill" data-q="q1" data-val="Fun but meaningful">Fun but meaningful</button>
+                    <button class="pill" data-q="q1" data-val="Improve my thinking">Improve my thinking</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="q2-group">
+                <label>How long should this break be?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="q2" data-val="2-3 min quick reset">2-3 min quick reset</button>
+                    <button class="pill" data-q="q2" data-val="5 minutes">5 minutes</button>
+                    <button class="pill" data-q="q2" data-val="8-10 minutes">8-10 minutes</button>
+                    <button class="pill" data-q="q2" data-val="Longer but valuable">Longer but valuable</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="q3-group">
+                <label>What type of content helps you refresh the most?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="q3" data-val="Nature calm visuals">Nature calm visuals</button>
+                    <button class="pill" data-q="q3" data-val="Motivational speeches">Motivational speeches</button>
+                    <button class="pill" data-q="q3" data-val="Short documentaries">Short documentaries</button>
+                    <button class="pill" data-q="q3" data-val="Science learning">Science learning</button>
+                    <button class="pill" data-q="q3" data-val="Light humor">Light humor</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="q4-group">
+                <label>What is your current mental state?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="q4" data-val="Mentally tired">Mentally tired</button>
+                    <button class="pill" data-q="q4" data-val="Slightly stressed">Slightly stressed</button>
+                    <button class="pill" data-q="q4" data-val="Bored losing focus">Bored losing focus</button>
+                    <button class="pill" data-q="q4" data-val="Low motivation">Low motivation</button>
+                    <button class="pill" data-q="q4" data-val="Just want a pause">Just want a pause</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="q5-group">
+                <label>After the break, what do you want to feel?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="q5" data-val="Relaxed">Relaxed</button>
+                    <button class="pill" data-q="q5" data-val="Energized">Energized</button>
+                    <button class="pill" data-q="q5" data-val="Focused again">Focused again</button>
+                    <button class="pill" data-q="q5" data-val="Inspired to continue">Inspired to continue</button>
+                    <button class="pill" data-q="q5" data-val="Curious to learn more">Curious to learn more</button>
+                </div>
+                <textarea id="q5-custom" placeholder="Anything else you want to share? (Optional)"></textarea>
+            </div>
+
+            <div class="api-keys-section">
+                <h3>API Configuration</h3>
+                <div class="input-group">
+                    <label for="api-key-1">Gemini API Key 1 (Required)</label>
+                    <input type="password" id="api-key-1" placeholder="Enter API Key">
+                </div>
+                <div class="input-group">
+                    <label for="api-key-2">Gemini API Key 2 (Optional Backup)</label>
+                    <input type="password" id="api-key-2" placeholder="Enter Backup Key">
+                </div>
+            </div>
+
+            <button class="btn btn-primary cta-btn" id="btn-submit-start" disabled>Let's get a break →</button>
+        </div>
+    </section>
+
+    <!-- 3. LOGIN SCREEN -->
+    <section id="login-screen" class="screen hidden">
+        <header class="screen-header">
+            <button class="btn-back" id="btn-back-login">← Back</button>
+        </header>
+        <div class="form-container">
+            <h2>Welcome back</h2>
+            
+            <div class="input-group">
+                <label for="login-user-name">Your Name</label>
+                <input type="text" id="login-user-name" placeholder="Your name">
+            </div>
+
+            <div class="mcq-group" id="login-q1-group">
+                <label>What kind of break do you want right now?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="login-q1" data-val="Calm and relaxing">Calm and relaxing</button>
+                    <button class="pill" data-q="login-q1" data-val="Inspiring motivational">Inspiring motivational</button>
+                    <button class="pill" data-q="login-q1" data-val="Fun but meaningful">Fun but meaningful</button>
+                    <button class="pill" data-q="login-q1" data-val="Improve my thinking">Improve my thinking</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="login-q2-group">
+                <label>How long should this break be?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="login-q2" data-val="2-3 min quick reset">2-3 min quick reset</button>
+                    <button class="pill" data-q="login-q2" data-val="5 minutes">5 minutes</button>
+                    <button class="pill" data-q="login-q2" data-val="8-10 minutes">8-10 minutes</button>
+                    <button class="pill" data-q="login-q2" data-val="Longer but valuable">Longer but valuable</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="login-q3-group">
+                <label>What type of content helps you refresh the most?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="login-q3" data-val="Nature calm visuals">Nature calm visuals</button>
+                    <button class="pill" data-q="login-q3" data-val="Motivational speeches">Motivational speeches</button>
+                    <button class="pill" data-q="login-q3" data-val="Short documentaries">Short documentaries</button>
+                    <button class="pill" data-q="login-q3" data-val="Science learning">Science learning</button>
+                    <button class="pill" data-q="login-q3" data-val="Light humor">Light humor</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="login-q4-group">
+                <label>What is your current mental state?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="login-q4" data-val="Mentally tired">Mentally tired</button>
+                    <button class="pill" data-q="login-q4" data-val="Slightly stressed">Slightly stressed</button>
+                    <button class="pill" data-q="login-q4" data-val="Bored losing focus">Bored losing focus</button>
+                    <button class="pill" data-q="login-q4" data-val="Low motivation">Low motivation</button>
+                    <button class="pill" data-q="login-q4" data-val="Just want a pause">Just want a pause</button>
+                </div>
+            </div>
+
+            <div class="mcq-group" id="login-q5-group">
+                <label>After the break, what do you want to feel?</label>
+                <div class="pill-options">
+                    <button class="pill" data-q="login-q5" data-val="Relaxed">Relaxed</button>
+                    <button class="pill" data-q="login-q5" data-val="Energized">Energized</button>
+                    <button class="pill" data-q="login-q5" data-val="Focused again">Focused again</button>
+                    <button class="pill" data-q="login-q5" data-val="Inspired to continue">Inspired to continue</button>
+                    <button class="pill" data-q="login-q5" data-val="Curious to learn more">Curious to learn more</button>
+                </div>
+                <textarea id="login-q5-custom" placeholder="Anything else you want to share? (Optional)"></textarea>
+            </div>
+
+            <div class="api-keys-section">
+                <h3>API Configuration</h3>
+                <div class="input-group">
+                    <label for="login-api-key-1">Gemini API Key 1 (Required)</label>
+                    <input type="password" id="login-api-key-1" placeholder="Enter API Key">
+                </div>
+                <div class="input-group">
+                    <label for="login-api-key-2">Gemini API Key 2 (Optional Backup)</label>
+                    <input type="password" id="login-api-key-2" placeholder="Enter Backup Key">
+                </div>
+            </div>
+
+            <div class="danger-actions">
+                <button class="btn btn-danger" id="btn-clear-keys-login">Clear API Keys</button>
+                <button class="btn btn-danger" id="btn-clear-data-login">Clear All Data</button>
+            </div>
+
+            <button class="btn btn-primary cta-btn" id="btn-submit-login" disabled>Let's get a break →</button>
+        </div>
+    </section>
+
+    <!-- 4. PLAYER SCREEN -->
+    <section id="player-screen" class="screen hidden">
+        <button id="btn-settings-player" class="btn-icon top-right">⚙️</button>
+        <div class="player-container">
+            
+            <div id="timer-view">
+                <h2 id="player-hello">Ready for focus?</h2>
+                <div class="timer-wrapper">
+                    <svg class="timer-svg" viewBox="0 0 200 200">
+                        <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
+                        <circle class="timer-progress" id="timer-ring" cx="100" cy="100" r="90"></circle>
+                    </svg>
+                    <div class="timer-display" id="timer-text">00:00</div>
+                </div>
+
+                <div class="break-action-wrapper">
+                    <div class="spin-border" id="break-spin-border"></div>
+                    <button id="btn-take-break" class="btn-take-break">Take a Break</button>
+                </div>
+                <p id="timer-warning" class="warning-msg hidden">Go back and remember you should win this 💪</p>
+            </div>
+
+            <div id="loading-view" class="hidden">
+                <div class="loading-dots">
+                    <div></div><div></div><div></div>
+                </div>
+                <p>Curating your break...</p>
+            </div>
+
+            <div id="content-view" class="hidden">
+                <div class="quote-box">
+                    <span class="quote-mark">"</span>
+                    <p id="content-quote">Motivational Quote here.</p>
+                </div>
+                
+                <div class="video-container">
+                    <iframe id="video-iframe" src="" allowfullscreen></iframe>
+                </div>
+
+                <div id="feedback-section" class="feedback-section">
+                    <p>Do you enjoy it?</p>
+                    <div class="feedback-buttons">
+                        <button class="btn btn-success" id="btn-feedback-yes">Yes, loving it</button>
+                        <button class="btn btn-danger" id="btn-feedback-no">Not really</button>
+                    </div>
+                </div>
+                <div id="success-msg-section" class="success-msg-section hidden">
+                    <p class="final-msg">Go back and win your game! 🏆</p>
+                    <button class="btn btn-primary" id="btn-return-home">Back to Home</button>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- 5. SETTINGS SCREEN -->
+    <section id="settings-screen" class="screen hidden">
+        <header class="screen-header">
+            <button class="btn-back" id="btn-back-settings">← Back</button>
+        </header>
+        <div class="settings-container">
+            <h2>Settings</h2>
+            <div class="danger-actions vertical">
+                <button class="btn btn-danger" id="btn-clear-keys-settings">Clear API Keys</button>
+                <button class="btn btn-danger" id="btn-clear-data-settings">Clear All Data</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
