@@ -326,6 +326,13 @@ textarea { resize: vertical; min-height: 80px; margin-top: 1rem; }
 .feedback-buttons .btn { flex-direction: row; }
 
 /* Player UI */
+#player-screen {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+}
+
 .player-container {
     flex: 1;
     display: flex;
@@ -334,6 +341,10 @@ textarea { resize: vertical; min-height: 80px; margin-top: 1rem; }
     justify-content: center;
     text-align: center;
     gap: 2rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
 #timer-view, #loading-view, #content-view {
@@ -477,10 +488,16 @@ textarea { resize: vertical; min-height: 80px; margin-top: 1rem; }
     line-height: 1.5;
 }
 
+#content-view {
+    width: 100%;
+    max-width: 700px;
+}
+
 .video-container {
     width: 100%;
+    max-width: 700px;
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 */
+    padding-bottom: 56.25%;
     height: 0;
     border-radius: 12px;
     overflow: hidden;
