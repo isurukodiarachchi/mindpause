@@ -29,9 +29,6 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
 }
 
 /* Background Animation */
