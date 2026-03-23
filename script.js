@@ -42,8 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (screenName === 'player') {
                 initTimer();
-            } else {
-                if(startTimerInterval) clearInterval(startTimerInterval);
             }
         }, 400); // 0.4s fade transition matches CSS
     }
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-back-login').addEventListener('click', () => showScreen('home'));
     document.getElementById('btn-back-settings').addEventListener('click', () => showScreen('home'));
     document.getElementById('btn-settings-player').addEventListener('click', () => showScreen('settings'));
-    document.getElementById('btn-return-home').addEventListener('click', () => showScreen('home'));
 
     // Pill MCQ Logic
     document.querySelectorAll('.pill').forEach(pill => {
@@ -75,26 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const inputsStart = [
-        document.getElementById('user-name'),
-        document.getElementById('api-key-1')
+        document.getElementById('user-name')
     ];
     inputsStart.forEach(i => i.addEventListener('input', () => validateForm('start')));
 
     const inputsLogin = [
-        document.getElementById('login-user-name'),
-        document.getElementById('login-api-key-1')
+        document.getElementById('login-user-name')
     ];
     inputsLogin.forEach(i => i.addEventListener('input', () => validateForm('login')));
 
     function validateForm(type) {
         const prefix = type === 'start' ? '' : 'login-';
         const nameValid = document.getElementById(prefix + 'user-name').value.trim() !== '';
-        // API key 1 is required
-        let key1Valid = false;
-        const key1Elem = document.getElementById(prefix + 'api-key-1');
-        if(key1Elem) {
-            key1Valid = key1Elem.value.trim() !== '';
-        }
         
         let allQuestions = true;
         ['q1', 'q2', 'q3', 'q4', 'q5'].forEach(q => {
@@ -106,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const submitBtn = document.getElementById(type === 'start' ? 'btn-submit-start' : 'btn-submit-login');
         if (submitBtn) {
-            submitBtn.disabled = !(nameValid && key1Valid && allQuestions);
+            submitBtn.disabled = !(nameValid && allQuestions);
         }
     }
 
@@ -115,12 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameInput = document.getElementById(prefix + 'user-name');
         
         if (nameInput) nameInput.value = localStorage.getItem('mp_name') || '';
-        
-        const key1Input = document.getElementById(prefix + 'api-key-1');
-        if (key1Input) key1Input.value = localStorage.getItem('mp_key1') || '';
-        
-        const key2Input = document.getElementById(prefix + 'api-key-2');
-        if (key2Input) key2Input.value = localStorage.getItem('mp_key2') || '';
         
         const customQ5 = document.getElementById(prefix + 'q5-custom');
         if (customQ5) customQ5.value = localStorage.getItem('mp_q5_custom') || '';
@@ -146,12 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameInput = document.getElementById(prefix + 'user-name');
         if (nameInput) localStorage.setItem('mp_name', nameInput.value.trim());
         
-        const key1Input = document.getElementById(prefix + 'api-key-1');
-        if (key1Input) localStorage.setItem('mp_key1', key1Input.value.trim());
-        
-        const key2Input = document.getElementById(prefix + 'api-key-2');
-        if (key2Input) localStorage.setItem('mp_key2', key2Input.value.trim());
-        
         const customQ5 = document.getElementById(prefix + 'q5-custom');
         if (customQ5) localStorage.setItem('mp_q5_custom', customQ5.value.trim());
 
@@ -176,53 +153,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear Data Features
     function clearData() {
         if(confirm("Are you sure you want to clear all your profile data?")) {
-            const keys = ['mp_name', 'mp_q1', 'mp_q2', 'mp_q3', 'mp_q4', 'mp_q5', 'mp_q5_custom', 'mp_key1', 'mp_key2', 'mp_key1_exhausted'];
+            const keys = ['mp_name', 'mp_q1', 'mp_q2', 'mp_q3', 'mp_q4', 'mp_q5', 'mp_q5_custom', 'mp_history'];
             keys.forEach(k => localStorage.removeItem(k));
             alert('All data cleared.');
             showScreen('home');
         }
     }
 
-    function clearKeys() {
-        if(confirm("Are you sure you want to clear your API configuration?")) {
-            localStorage.removeItem('mp_key1');
-            localStorage.removeItem('mp_key2');
-            localStorage.removeItem('mp_key1_exhausted');
-            alert('API keys cleared.');
-        }
-    }
-
     document.getElementById('btn-clear-data-login').addEventListener('click', clearData);
-    document.getElementById('btn-clear-keys-login').addEventListener('click', clearKeys);
     document.getElementById('btn-clear-data-settings').addEventListener('click', clearData);
-    document.getElementById('btn-clear-keys-settings').addEventListener('click', clearKeys);
 
 
     // Player & Timer Logic
-    function getActiveApiKey() {
-        const key1 = localStorage.getItem('mp_key1');
-        const key2 = localStorage.getItem('mp_key2');
-        const exhausted = localStorage.getItem('mp_key1_exhausted');
-
-        if (exhausted) {
-            // Check if exhausted date is today
-            const exhaustDate = new Date(parseInt(exhausted)).toDateString();
-            const today = new Date().toDateString();
-            
-            if (exhaustDate === today) {
-                return key2; // fallback to key 2
-            } else {
-                localStorage.removeItem('mp_key1_exhausted'); // Reset for new day
-                return key1;
-            }
-        }
-        return key1;
-    }
-
     const timerRing = document.getElementById('timer-ring');
     const timerText = document.getElementById('timer-text');
     const playerHello = document.getElementById('player-hello');
-    const breakWarning = document.getElementById('timer-warning');
+    
+    let breakSessionStarted = false;
+
+    // Modal Variables
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalIcon = document.getElementById('modal-icon');
+    const modalMessage = document.getElementById('modal-message');
+    const btnModalClose = document.getElementById('btn-modal-close');
+    let modalAction = null;
+
+    function showModal(icon, message, goHomeOnClose) {
+        modalIcon.textContent = icon;
+        modalMessage.textContent = message;
+        
+        modalAction = () => {
+            modalOverlay.classList.remove('active');
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                if (goHomeOnClose) {
+                    showScreen('home');
+                }
+            }, 300);
+        };
+        
+        modalOverlay.classList.remove('hidden');
+        void modalOverlay.offsetWidth;
+        modalOverlay.classList.add('active');
+    }
+
+    btnModalClose.addEventListener('click', () => {
+        if (modalAction) modalAction();
+    });
 
     function initTimer() {
         playerHello.textContent = `Ready for focus, ${localStorage.getItem('mp_name') || ''}?`;
@@ -231,23 +208,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('timer-view').classList.remove('hidden');
         document.getElementById('loading-view').classList.add('hidden');
         document.getElementById('content-view').classList.add('hidden');
-        document.getElementById('feedback-section').classList.remove('hidden');
-        document.getElementById('success-msg-section').classList.add('hidden');
-        breakWarning.classList.add('hidden');
         
-        timerStartTime = Date.now();
-        timerElapsed = 0;
-        retryCount = 0;
+        const spinBorder = document.getElementById('break-spin-border');
+        if (spinBorder) {
+            spinBorder.style.display = breakSessionStarted ? 'none' : 'block';
+        }
         
-        if(startTimerInterval) clearInterval(startTimerInterval);
-        startTimerInterval = setInterval(updateTimer, 1000);
+        if (breakSessionStarted && !startTimerInterval) {
+            startTimerInterval = setInterval(updateTimer, 1000);
+        }
         updateTimer();
     }
 
     function updateTimer() {
-        timerElapsed = Date.now() - timerStartTime;
-        let remaining = WORK_DURATION_MS - timerElapsed;
+        if (breakSessionStarted) {
+            timerElapsed = Date.now() - timerStartTime;
+        } else {
+            timerElapsed = 0;
+        }
         
+        let remaining = WORK_DURATION_MS - timerElapsed;
         if(remaining < 0) remaining = 0;
 
         // Display elapsed time counting up from 00:00 to 25:00
@@ -264,20 +244,39 @@ document.addEventListener('DOMContentLoaded', () => {
             timerText.textContent = `${maxMins.toString().padStart(2, '0')}:${maxSecs.toString().padStart(2, '0')}`;
         }
 
-        // Update SVG (565.48 is full circumference)
+        // Update SVG (722.57 is full circumference)
         const progress = Math.min(timerElapsed / WORK_DURATION_MS, 1);
-        const dashoffset = 565.48 * (1 - progress);
+        const dashoffset = 722.57 * (1 - progress);
         timerRing.style.strokeDashoffset = dashoffset;
     }
 
     document.getElementById('btn-take-break').addEventListener('click', () => {
-        if (timerElapsed < WORK_DURATION_MS) {
-            // Warn if clicked before duration
-            breakWarning.classList.remove('hidden');
-        } else {
-            // Success
-            breakWarning.classList.add('hidden');
+        if (!breakSessionStarted) {
+            // First click
+            breakSessionStarted = true;
+            timerStartTime = Date.now();
+            retryCount = 0;
+            
+            const spinBorder = document.getElementById('break-spin-border');
+            if (spinBorder) spinBorder.style.display = 'none';
+            
+            if (startTimerInterval) clearInterval(startTimerInterval);
+            startTimerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+            
             fetchBreak();
+        } else {
+            // Subsequent clicks
+            if (timerElapsed < WORK_DURATION_MS) {
+                showModal("💪", "Go back and remember you should win this", false);
+            } else {
+                // Reset timer and start new break
+                timerStartTime = Date.now();
+                timerElapsed = 0;
+                retryCount = 0;
+                updateTimer();
+                fetchBreak();
+            }
         }
     });
 
@@ -286,12 +285,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('content-view').classList.add('hidden');
         document.getElementById('loading-view').classList.remove('hidden');
 
-        const apiKey = getActiveApiKey();
-
-        if (!apiKey) {
-            alert('No valid API Key found. Please configure it in settings.');
-            showScreen('settings');
-            return;
+        let historyArray = [];
+        try {
+            historyArray = JSON.parse(localStorage.getItem('mp_history') || '[]');
+        } catch(e) {
+            historyArray = [];
+        }
+        let formattedHistoryString = "";
+        if (historyArray.length > 0) {
+            formattedHistoryString = historyArray.map(item => `- ${item}`).join('\n');
         }
 
         const payload = {
@@ -301,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
             q4: localStorage.getItem('mp_q4'),
             q5: localStorage.getItem('mp_q5'),
             q5_custom: localStorage.getItem('mp_q5_custom') || '',
-            api_key: apiKey
+            history: formattedHistoryString
         };
 
         if (retryNote) {
@@ -315,23 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             });
 
-            if (response.status === 429 || response.status === 403) {
-                if(localStorage.getItem('mp_key1') === apiKey) {
-                    // Exhausted Key 1
-                    localStorage.setItem('mp_key1_exhausted', Date.now().toString());
-                    const fallback = localStorage.getItem('mp_key2');
-                    if (fallback) {
-                        return fetchBreak(retryNote); // Retry immediately with fallback
-                    } else {
-                        throw new Error('API Key exhausted and no backup key found.');
-                    }
-                } else {
-                    // Exhausted Key 2
-                    throw new Error('Both API keys exhausted or rate limited.');
-                }
-            }
-
-            if (!response.ok) throw new Error('Failed to fetch break curation.');
+            if (!response.ok) throw new Error('Failed to fetch break content. Please try again.');
             
             const data = await response.json();
             
@@ -381,15 +367,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Feedback Handlers
     document.getElementById('btn-feedback-yes').addEventListener('click', () => {
-        document.getElementById('feedback-section').classList.add('hidden');
-        document.getElementById('success-msg-section').classList.remove('hidden');
+        const iframe = document.getElementById('video-iframe');
+        const currentUrl = iframe ? iframe.src : '';
+        
+        const q2value = localStorage.getItem('mp_q2') || '';
+        const q3value = localStorage.getItem('mp_q3') || '';
+        const q5value = localStorage.getItem('mp_q5') || '';
+        const entryString = q3value + ", " + q2value + ", felt " + q5value;
+        
+        let history = [];
+        try {
+            history = JSON.parse(localStorage.getItem('mp_history') || '[]');
+        } catch(e) {
+            history = [];
+        }
+        
+        history.unshift(entryString);
+        history = history.slice(0, 20);
+        localStorage.setItem('mp_history', JSON.stringify(history));
+
+        showModal("🏆", "Go back and win your game!", true);
     });
 
     document.getElementById('btn-feedback-no').addEventListener('click', () => {
         retryCount++;
         if (retryCount >= 3) {
-            document.getElementById('feedback-section').classList.add('hidden');
-            document.getElementById('success-msg-section').classList.remove('hidden');
+            showModal("🏆", "Go back and win your game!", true);
             retryCount = 0;
         } else {
             fetchBreak("The user didn't enjoy the previous suggestion. Please recommend something different.");
