@@ -1,5 +1,5 @@
 // script.js
-const WORK_DURATION_MINUTES = 1; // Used 1 minute for testing per requirements
+const WORK_DURATION_MINUTES = 25;
 const WORK_DURATION_MS = WORK_DURATION_MINUTES * 60 * 1000;
 const WEBHOOK_URL = 'https://isuruudara.app.n8n.cloud/webhook/relaxation-break';
 
@@ -22,28 +22,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Navigation and Transition Logic
     function showScreen(screenName) {
-        // Fade out active screens
+        const target = screens[screenName];
+        
         Object.values(screens).forEach(s => {
-            if(s.classList.contains('active')) {
-                s.classList.remove('active');
+            s.classList.remove('active');
+        });
+        
+        Object.values(screens).forEach(s => {
+            if (s !== target) {
+                s.classList.add('hidden');
             }
         });
         
-        // Wait for fade out, then display hidden and unhide new screen
-        setTimeout(() => {
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            const target = screens[screenName];
-            target.classList.remove('hidden');
-            
-            // Trigger reflow
-            void target.offsetWidth;
-            
-            target.classList.add('active');
-            
-            if (screenName === 'player') {
-                initTimer();
-            }
-        }, 400); // 0.4s fade transition matches CSS
+        target.classList.remove('hidden');
+        void target.offsetWidth;
+        target.classList.add('active');
+        
+        if (screenName === 'player') {
+            initTimer();
+        }
+        
+        window.scrollTo(0, 0);
     }
 
     // Wiring up Navigation Buttons
@@ -184,12 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         modalAction = () => {
             modalOverlay.classList.remove('active');
-            setTimeout(() => {
-                modalOverlay.classList.add('hidden');
-                if (goHomeOnClose) {
-                    showScreen('home');
-                }
-            }, 300);
+            modalOverlay.classList.add('hidden');
+            if (goHomeOnClose) {
+                breakSessionStarted = false;
+                if (startTimerInterval) clearInterval(startTimerInterval);
+                timerElapsed = 0;
+                showScreen('home');
+            }
         };
         
         modalOverlay.classList.remove('hidden');
