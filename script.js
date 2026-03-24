@@ -185,9 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
             modalOverlay.classList.remove('active');
             modalOverlay.classList.add('hidden');
             if (goHomeOnClose) {
-                breakSessionStarted = false;
-                if (startTimerInterval) clearInterval(startTimerInterval);
-                timerElapsed = 0;
                 showScreen('home');
             }
         };

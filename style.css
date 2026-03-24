@@ -335,7 +335,7 @@ textarea { resize: vertical; min-height: 80px; margin-top: 1rem; }
     text-align: center;
     gap: 2rem;
     width: 100%;
-    max-width: 600px;
+    max-width: 750px;
     margin: 0 auto;
     padding: 2rem;
 }
